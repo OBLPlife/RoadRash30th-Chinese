@@ -14,9 +14,9 @@
 
 **恢复英文原版**
 
-退出游戏，再次双击同一个 `RoadRash_ZH_CN_Setup.exe`，点击 **「还原」** 即可。无需打开 PowerShell 或输入命令。
+退出游戏，再次双击 `RoadRash_ZH_CN_Setup.exe`，点击 **「还原」**。
 
-安装器会在游戏目录的 `中文补丁_原版备份` 文件夹中保存原文件，安装和还原均有结果提示；不会修改游戏存档。遇到不匹配的游戏版本会停止操作，避免覆盖其他版本文件。
+安装器自动备份原文件至游戏目录下的 `中文补丁_原版备份` 文件夹，并在操作完成后显示结果。
 
 如果同时安装了高清补丁，**先安装汉化，再安装高清补丁**；还原时按相反顺序操作。
 
@@ -38,7 +38,7 @@
 
 ## 从源码构建
 
-仅面向需要自行编译的开发者：需要 Windows、Python 3.10 或更高版本，以及 .NET Framework 4.x 自带的 C# 编译器。无需第三方 Python 包。准备自己的英文原版游戏文件；构建程序只读取该目录。
+构建环境：Windows、Python 3.10+、.NET Framework 4.x C# 编译器。使用英文原版游戏目录构建。
 
 ```powershell
 python build.py --original-dir "D:\Games\RoadRash"
@@ -46,13 +46,13 @@ python build.py --original-dir "D:\Games\RoadRash"
 
 如果游戏已经装过汉化，可将 `--original-dir` 指向包含上述两个原版文件的备份目录。
 
-输出为 `dist/RoadRash_ZH_CN_Setup.exe`。安装器内嵌二进制差分，根据用户已有的原版文件重建汉化文件，不打包完整游戏 EXE、原版语言库或游戏素材。
+输出为 `dist/RoadRash_ZH_CN_Setup.exe`。安装器通过内嵌差分数据，将本地原版资源转换为汉化文件。
 
 ```powershell
 python test_installer.py --original-dir "D:\Games\RoadRash"
 ```
 
-测试仅在临时目录复制两个原版文件，检查窗口只有安装与还原两个按钮且打开不写入，以及命令行安装、重复安装、恢复、不兼容版本拒绝及写入失败回滚。窗口在离屏状态检查，预览输出为 `build/window.png`；不启动游戏、不修改实际安装目录。
+测试覆盖安装、重复安装、还原、版本校验及失败回滚，并生成安装器窗口预览 `build/window.png`。
 
 ## 文件
 
@@ -62,9 +62,9 @@ python test_installer.py --original-dir "D:\Games\RoadRash"
 - `translations.json`：1166 条替换译文；未改动的字符串从用户原版文件读取。
 - `build.py`：校验原版、生成纯汉化差分、编译 EXE。
 - `test_installer.py`：安装器文件操作测试。
-- `test_window.cs`：安装器小窗口与打开不写入检查，由上述 Python 测试自动编译运行。
+- `test_window.cs`：安装器窗口测试。
 
-`build/` 和 `dist/` 已在 `.gitignore` 中；正式安装包在 Releases 发布。不分发完整游戏文件。
+`build/` 和 `dist/` 已在 `.gitignore` 中；正式安装包在 Releases 发布。
 
 ## 许可证
 
