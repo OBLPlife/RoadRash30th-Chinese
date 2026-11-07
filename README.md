@@ -66,4 +66,6 @@ python test_installer.py --original-dir "D:\Games\RoadRash"
 
 `build/` 和 `dist/` 已在 `.gitignore` 中；正式安装包在 Releases 发布。不分发完整游戏文件。
 
-本项目新增代码及提供的译文采用 **PolyForm Noncommercial License 1.0.0**，源码公开，可按许可允许的非商业目的使用、修改和分发；许可范围之外的用途需要另行授权。完整条款见 [LICENSE](LICENSE)。本许可不涵盖原版游戏程序、素材和商标。
+## 许可证
+
+本项目采用 [PolyForm Noncommercial License 1.0.0](LICENSE)，允许非商业使用、修改和分发；**禁止未经授权的商业使用及收费倒卖**。
