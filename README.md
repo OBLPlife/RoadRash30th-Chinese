@@ -56,4 +56,4 @@ python test_installer.py --original-dir "D:\Games\RoadRash"
 
 ## 许可证
 
-项目代码采用 [MIT License](LICENSE)。
+本项目采用 [PolyForm Noncommercial License 1.0.0](LICENSE)，允许非商业使用、修改及分发；未经许可不得用于商业用途或收费倒卖。
