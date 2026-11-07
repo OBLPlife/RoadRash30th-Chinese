@@ -2,6 +2,8 @@
 
 适用于 Steam 英文原版 **build 26105967** 的简体中文补丁。
 
+**分辨率修复补丁请移步：** [RoadRash30th-HD](https://github.com/OBLPlife/RoadRash30th-HD)
+
 ## 汉化内容
 
 - 菜单、设置、角色对白、车辆与赛道介绍、比赛提示
