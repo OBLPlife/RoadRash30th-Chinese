@@ -1,42 +1,44 @@
 # 暴力摩托：30 周年纪念版 简体中文补丁
 
-纯汉化补丁，适用于 Steam build **26105967** 的英文原版。
+适用于 Steam《暴力摩托：30 周年纪念版》英文原版（build **26105967**）。
 
-内容包括中文菜单、设置、角色对白、车辆与赛道介绍、比赛提示，以及中文字体显示、长文本排版和角色背景图片查找修正。制作人员姓名、公司名、乐队名、标准按键名等保留原文。
+**[下载最新版汉化补丁（EXE）](https://github.com/OBLPlife/RoadRash30th-Chinese/releases/latest)** · **[原生分辨率与高清重绘补丁](https://github.com/OBLPlife/RoadRash30th-HD)**
 
-本包不包含高清渲染模块、宽屏适配、分辨率菜单或帧率修改。
+## 安装与还原
 
-## 安装
+**安装汉化**
 
 1. 在 Steam 将游戏语言设为**英语**，退出游戏。
-2. 将 `RoadRash_ZH_CN_Setup.exe` 放到游戏根目录，与 `RoadRash95.exe` 放在一起。
-3. 双击补丁打开窗口，点击“安装”。弹窗提示“汉化完成”后，从 Steam 正常启动游戏。
+2. 下载 `RoadRash_ZH_CN_Setup.exe`，放进游戏根目录（与 `RoadRash95.exe` 在同一文件夹）。
+3. **双击 EXE → 点击「安装」**。出现完成提示后，从 Steam 正常启动游戏。
 
-打开窗口不会自动修改游戏文件。小窗口中只有“安装”和“还原”两个按钮，执行结果用弹窗提示。
+**恢复英文原版**
 
-用户只需要这一个 EXE，不需要 Python、开发工具或额外的补丁 DLL。安装器使用 Windows .NET Framework 4.x；Windows 10/11 通常已提供该运行环境。汉化画面此前在简体中文 Windows 环境检查，其他系统语言环境尚未验证。
+退出游戏，再次双击同一个 `RoadRash_ZH_CN_Setup.exe`，点击**「还原」**即可。无需打开 PowerShell 或输入命令。
 
-安装器只修改 `RoadRash95.exe` 和 `TEXT/ENU.DLL`，并在 `中文补丁_原版备份` 保存原文件，不修改存档。重复运行会提示已安装。文件版本不匹配会停止，不覆盖其他版本或其他改版。
+安装器会在游戏目录的 `中文补丁_原版备份` 文件夹中保存原文件，安装和还原均有结果提示；不会修改游戏存档。遇到不匹配的游戏版本会停止操作，避免覆盖其他版本文件。
 
-如果提示没有写入权限，以管理员身份运行补丁。安装结果写入同目录的 `RoadRash_ZH_CN_Setup.log`。
+如果同时安装了高清补丁，**先安装汉化，再安装高清补丁**；还原时按相反顺序操作。
 
-## 恢复英文原版
+## 实机截图
 
-退出游戏，再次双击同一个 EXE，在窗口中点击“还原”。如果还装了独立高清补丁，**先用高清补丁还原，再还原汉化**。
+| 开场画面 | 游戏模式 |
+| :---: | :---: |
+| ![中文开场画面](screenshots/title-credits.png) | ![游戏模式界面](screenshots/game-mode.png) |
+| 休息室：存档菜单 | 休息室：模式菜单 |
+| ![休息室存档菜单](screenshots/restroom-save-menu.png) | ![休息室模式菜单](screenshots/restroom-mode-menu.png) |
+| 车手资料 | 车手对白 |
+| ![中文车手资料](screenshots/rider-profile.png) | ![中文车手对白](screenshots/rider-dialogue.png) |
 
-也保留命令行用法，在游戏目录打开 PowerShell，运行：
+## 汉化内容
 
-```powershell
-.\RoadRash_ZH_CN_Setup.exe /restore
-```
-
-也可以将 `中文补丁_原版备份` 中的 `RoadRash95.exe` 和 `TEXT/ENU.DLL` 按原路径复制回游戏目录。
-
-还原保留备份、安装器和日志；存档不变。`/quiet` 静默安装，`/quiet /restore` 静默还原。
+- **1166 条中文译文**：涵盖游戏菜单、设置、角色对白、车辆与赛道介绍、比赛提示等。
+- **中文显示适配**：中文字体、较长文本排版和角色背景图片查找修正。
+- 人名、公司名、乐队名及标准按键名称等专有名称保留原文。
 
 ## 从源码构建
 
-需要 Windows、Python 3.10 或更高版本，以及 .NET Framework 4.x 自带的 C# 编译器。不需要第三方 Python 包。准备自己的英文原版游戏文件；构建程序只读取该目录。
+仅面向需要自行编译的开发者：需要 Windows、Python 3.10 或更高版本，以及 .NET Framework 4.x 自带的 C# 编译器。无需第三方 Python 包。准备自己的英文原版游戏文件；构建程序只读取该目录。
 
 ```powershell
 python build.py --original-dir "D:\Games\RoadRash"
@@ -62,6 +64,6 @@ python test_installer.py --original-dir "D:\Games\RoadRash"
 - `test_installer.py`：安装器文件操作测试。
 - `test_window.cs`：安装器小窗口与打开不写入检查，由上述 Python 测试自动编译运行。
 
-提交 GitHub 时提交这些源码；`build/` 和 `dist/` 已在 `.gitignore` 中。安装 EXE 可作为 Release 附件单独上传。请勿将构建中间文件里的完整游戏文件加入仓库。
+`build/` 和 `dist/` 已在 `.gitignore` 中；正式安装包在 Releases 发布。不分发完整游戏文件。
 
 本项目新增代码及提供的译文采用 **PolyForm Noncommercial License 1.0.0**，源码公开，可按许可允许的非商业目的使用、修改和分发；许可范围之外的用途需要另行授权。完整条款见 [LICENSE](LICENSE)。本许可不涵盖原版游戏程序、素材和商标。
