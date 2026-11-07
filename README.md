@@ -4,6 +4,18 @@
 
 **分辨率修复补丁请移步：** [RoadRash30th-HD](https://github.com/OBLPlife/RoadRash30th-HD)
 
+## 实机截图
+
+以下截图展示简体中文补丁在游戏中的实际效果。
+
+| 启动画面 | 游戏模式 |
+| :---: | :---: |
+| ![中文启动画面](screenshots/title-credits.png) | ![游戏模式界面](screenshots/game-mode.png) |
+| 休息室菜单 | 模式选择 |
+| ![休息室菜单](screenshots/restroom-save-menu.png) | ![休息室模式选择](screenshots/restroom-mode-menu.png) |
+| 车手资料 | 车手对白 |
+| ![车手资料界面](screenshots/rider-profile.png) | ![中文车手对白](screenshots/rider-dialogue.png) |
+
 ## 汉化内容
 
 - 菜单、设置、角色对白、车辆与赛道介绍、比赛提示
