@@ -2,14 +2,14 @@
 
 适用于 Steam《暴力摩托：30 周年纪念版》英文原版（build **26105967**）。
 
-**[下载最新版汉化补丁（EXE）](https://github.com/OBLPlife/RoadRash30th-Chinese/releases/latest)** · **[原生分辨率与高清重绘补丁](https://github.com/OBLPlife/RoadRash30th-HD)**
+**分辨率修复补丁请移步：** [RoadRash30th-HD](https://github.com/OBLPlife/RoadRash30th-HD)
 
 ## 安装与还原
 
 **安装汉化**
 
 1. 在 Steam 将游戏语言设为**英语**，退出游戏。
-2. 下载 `RoadRash_ZH_CN_Setup.exe`，放进游戏根目录（与 `RoadRash95.exe` 在同一文件夹）。
+2. 从 [Releases 发布页面](https://github.com/OBLPlife/RoadRash30th-Chinese/releases/latest) 下载 `RoadRash_ZH_CN_Setup.exe`，放进游戏根目录（与 `RoadRash95.exe` 在同一文件夹）。
 3. **双击 EXE → 点击「安装」**。出现完成提示后，从 Steam 正常启动游戏。
 
 **恢复英文原版**
