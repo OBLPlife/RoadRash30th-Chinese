@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 from pathlib import Path
 import ctypes
 from ctypes import wintypes

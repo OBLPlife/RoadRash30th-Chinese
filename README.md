@@ -1,73 +1,67 @@
 # 暴力摩托：30 周年纪念版 简体中文补丁
 
-适用于 Steam 英文原版 **build 26105967** 的简体中文补丁。
+纯汉化补丁，适用于 Steam build **26105967** 的英文原版。
 
-**分辨率修复补丁请移步：** [RoadRash30th-HD](https://github.com/OBLPlife/RoadRash30th-HD)
+内容包括中文菜单、设置、角色对白、车辆与赛道介绍、比赛提示，以及中文字体显示、长文本排版和角色背景图片查找修正。制作人员姓名、公司名、乐队名、标准按键名等保留原文。
 
-## 实机截图
+本包不包含高清渲染模块、宽屏适配、分辨率菜单或帧率修改。
 
-以下截图展示简体中文补丁在游戏中的实际效果。
+## 安装
 
-| 启动画面 | 游戏模式 |
-| :---: | :---: |
-| ![中文启动画面](screenshots/title-credits.png) | ![游戏模式界面](screenshots/game-mode.png) |
-| 休息室菜单 | 模式选择 |
-| ![休息室菜单](screenshots/restroom-save-menu.png) | ![休息室模式选择](screenshots/restroom-mode-menu.png) |
-| 车手资料 | 车手对白 |
-| ![车手资料界面](screenshots/rider-profile.png) | ![中文车手对白](screenshots/rider-dialogue.png) |
+1. 在 Steam 将游戏语言设为**英语**，退出游戏。
+2. 将 `RoadRash_ZH_CN_Setup.exe` 放到游戏根目录，与 `RoadRash95.exe` 放在一起。
+3. 双击补丁打开窗口，点击“安装”。弹窗提示“汉化完成”后，从 Steam 正常启动游戏。
 
-## 汉化内容
+打开窗口不会自动修改游戏文件。小窗口中只有“安装”和“还原”两个按钮，执行结果用弹窗提示。
 
-- 菜单、设置、角色对白、车辆与赛道介绍、比赛提示
-- 1166 条文本翻译
-- 中文字体显示与长文本排版优化
-- 角色背景图片显示修正
+用户只需要这一个 EXE，不需要 Python、开发工具或额外的补丁 DLL。安装器使用 Windows .NET Framework 4.x；Windows 10/11 通常已提供该运行环境。汉化画面此前在简体中文 Windows 环境检查，其他系统语言环境尚未验证。
 
-人物姓名、公司名、乐队名及标准按键名称保留原文。
+安装器只修改 `RoadRash95.exe` 和 `TEXT/ENU.DLL`，并在 `中文补丁_原版备份` 保存原文件，不修改存档。重复运行会提示已安装。文件版本不匹配会停止，不覆盖其他版本或其他改版。
 
-## 安装方法
-
-1. 在 Steam 中将游戏语言设为 **英语**，并退出游戏。
-2. 将 `RoadRash_ZH_CN_Setup.exe` 放入游戏根目录，与 `RoadRash95.exe` 位于同一目录。
-3. 双击运行安装器，出现“汉化完成”后，从 Steam 启动游戏。
-
-安装器会自动将原版文件备份至游戏目录下的 `中文补丁_原版备份` 文件夹。
+如果提示没有写入权限，以管理员身份运行补丁。安装结果写入同目录的 `RoadRash_ZH_CN_Setup.log`。
 
 ## 恢复英文原版
 
-退出游戏，在游戏根目录打开 PowerShell，运行：
+退出游戏，再次双击同一个 EXE，在窗口中点击“还原”。如果还装了独立高清补丁，**先用高清补丁还原，再还原汉化**。
+
+也保留命令行用法，在游戏目录打开 PowerShell，运行：
 
 ```powershell
 .\RoadRash_ZH_CN_Setup.exe /restore
 ```
 
+也可以将 `中文补丁_原版备份` 中的 `RoadRash95.exe` 和 `TEXT/ENU.DLL` 按原路径复制回游戏目录。
+
+还原保留备份、安装器和日志；存档不变。`/quiet` 静默安装，`/quiet /restore` 静默还原。
+
 ## 从源码构建
 
-构建环境：Windows、Python 3.10+、.NET Framework 4.x 编译器。
-
-准备 Steam 英文原版游戏文件，在源码目录执行：
+需要 Windows、Python 3.10 或更高版本，以及 .NET Framework 4.x 自带的 C# 编译器。不需要第三方 Python 包。准备自己的英文原版游戏文件；构建程序只读取该目录。
 
 ```powershell
 python build.py --original-dir "D:\Games\RoadRash"
 ```
 
-生成的安装器位于 `dist/RoadRash_ZH_CN_Setup.exe`。
+如果游戏已经装过汉化，可将 `--original-dir` 指向包含上述两个原版文件的备份目录。
 
-构建完成后可运行安装器测试：
+输出为 `dist/RoadRash_ZH_CN_Setup.exe`。安装器内嵌二进制差分，根据用户已有的原版文件重建汉化文件，不打包完整游戏 EXE、原版语言库或游戏素材。
 
 ```powershell
 python test_installer.py --original-dir "D:\Games\RoadRash"
 ```
 
-## 项目文件
+测试仅在临时目录复制两个原版文件，检查窗口只有安装与还原两个按钮且打开不写入，以及命令行安装、重复安装、恢复、不兼容版本拒绝及写入失败回滚。窗口在离屏状态检查，预览输出为 `build/window.png`；不启动游戏、不修改实际安装目录。
 
-- `translations.json`：中文翻译文本
-- `localize.py`：文字、字体和显示相关的汉化处理
-- `Installer.cs`：安装及恢复程序
-- `build.py`：生成汉化安装器
-- `test_installer.py`：安装器测试
-- `app.manifest`：安装器清单
+## 文件
 
-## 许可证
+- `Installer.cs`：单文件安装器，自动定位自身所在目录。
+- `PatchWindow.cs`：只有安装与还原两个按钮的小窗口。
+- `localize.py`：中文字体、内置文字、语言资源和角色背景查找补丁。
+- `translations.json`：1166 条替换译文；未改动的字符串从用户原版文件读取。
+- `build.py`：校验原版、生成纯汉化差分、编译 EXE。
+- `test_installer.py`：安装器文件操作测试。
+- `test_window.cs`：安装器小窗口与打开不写入检查，由上述 Python 测试自动编译运行。
 
-本项目采用 [PolyForm Noncommercial License 1.0.0](LICENSE)，允许非商业使用、修改及分发；未经许可不得用于商业用途或收费倒卖。
+提交 GitHub 时提交这些源码；`build/` 和 `dist/` 已在 `.gitignore` 中。安装 EXE 可作为 Release 附件单独上传。请勿将构建中间文件里的完整游戏文件加入仓库。
+
+本项目新增代码及提供的译文采用 **PolyForm Noncommercial License 1.0.0**，源码公开，可按许可允许的非商业目的使用、修改和分发；许可范围之外的用途需要另行授权。完整条款见 [LICENSE](LICENSE)。本许可不涵盖原版游戏程序、素材和商标。

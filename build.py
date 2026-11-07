@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 """Build the localization-only installer from the user's original game files."""
 from pathlib import Path
 import argparse
@@ -74,7 +75,7 @@ def build(original_dir):
     payload = io.BytesIO()
     payload.write(b'RRZH0001')
     payload.write(struct.pack('<I', len(ORIGINALS)))
-    manifest = {'version': '1.0.0', 'steam_build': 26105967, 'localization_only': True, 'files': {}}
+    manifest = {'version': '1.1.0', 'steam_build': 26105967, 'localization_only': True, 'files': {}}
     for name, before in original.items():
         after = (stage / name).read_bytes()
         changes = spans(before, after)
@@ -104,7 +105,9 @@ def build(original_dir):
     output.parent.mkdir(exist_ok=True)
     subprocess.run([str(compiler), '/nologo', '/target:winexe', '/platform:anycpu', '/optimize+', '/utf8output',
                     '/out:' + str(output), '/win32manifest:' + str(ROOT / 'app.manifest'),
-                    '/resource:' + str(packed) + ',payload.gz', '/reference:System.Windows.Forms.dll',
+                    '/resource:' + str(packed) + ',payload.gz', '/resource:' + str(ROOT / 'LICENSE') + ',LICENSE',
+                    '/reference:System.Windows.Forms.dll', '/reference:System.Drawing.dll',
+                    str(ROOT / 'PatchWindow.cs'),
                     str(ROOT / 'Installer.cs')], check=True)
     manifest['installer_sha256'] = digest(output.read_bytes())
     manifest['installer_bytes'] = output.stat().st_size

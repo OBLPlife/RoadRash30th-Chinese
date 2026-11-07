@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 """Exercise the packaged EXE on temporary file fixtures; never start the game."""
 from pathlib import Path
 import argparse
@@ -5,6 +6,7 @@ import ctypes
 from ctypes import wintypes
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import tempfile
@@ -57,11 +59,20 @@ def run(original_dir):
             assert sha(folder / name) == manifest['files'][name][kind + '_sha256'], name
 
     try:
+        compiler = Path(os.environ.get('WINDIR', r'C:\Windows')) / 'Microsoft.NET/Framework/v4.0.30319/csc.exe'
+        window_test = build / 'window_test.exe'
+        subprocess.run([str(compiler), '/nologo', '/utf8output', '/out:' + str(window_test),
+                        '/win32manifest:' + str(ROOT / 'app.manifest'),
+                        '/reference:System.Windows.Forms.dll', '/reference:System.Drawing.dll',
+                        str(ROOT / 'test_window.cs')], check=True)
         missing = fixture('没有游戏文件', originals=False)
         assert '根目录' in execute(missing, success=False)
         checks.append('missing game rejected')
 
         normal = fixture('中文路径 与 空格')
+        subprocess.run([str(window_test), str(normal / '汉化补丁.exe'), str(build / 'window.png')],
+                       cwd=cwd, check=True, timeout=30)
+        checks.append('GUI opens without writes and contains only Install and Restore buttons')
         assert '汉化完成' in execute(normal)
         hashes(normal, 'localized')
         hashes(normal / '中文补丁_原版备份', 'original')

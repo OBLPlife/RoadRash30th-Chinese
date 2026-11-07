@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,10 +9,10 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
 
-[assembly: AssemblyTitle("暴力摩托 简体中文补丁")]
+[assembly: AssemblyTitle("暴力摩托：30周年纪念版 简体中文补丁")]
 [assembly: AssemblyDescription("Road Rash 30th Anniversary Edition localization-only patch")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.1.0.0")]
+[assembly: AssemblyFileVersion("1.1.0.0")]
 
 internal static class Installer
 {
@@ -195,26 +196,17 @@ internal static class Installer
         }
         finally { foreach (var op in operations) Cleanup(op.Temporary); }
     }
-    static void Report(string message, bool error, bool quiet)
+    static PatchResult Finish(string message, bool error)
     {
-        try { File.WriteAllText(Path.Combine(Root, "RoadRash_ZH_CN_Setup.log"), message + Environment.NewLine, Encoding.UTF8); }
+        string log = message + "\n\n许可：PolyForm Noncommercial License 1.0.0\nhttps://polyformproject.org/licenses/noncommercial/1.0.0";
+        try { File.WriteAllText(Path.Combine(Root, "RoadRash_ZH_CN_Setup.log"), log + Environment.NewLine, Encoding.UTF8); }
         catch (IOException) { } catch (UnauthorizedAccessException) { }
-        if (!quiet) MessageBox.Show(message, "暴力摩托 简体中文补丁", MessageBoxButtons.OK,
-                                    error ? MessageBoxIcon.Error : MessageBoxIcon.Information);
+        return new PatchResult(!error, message);
     }
-    [STAThread]
-    static int Main(string[] args)
+    static PatchResult Execute(bool restore)
     {
-        bool quiet = Array.Exists(args, a => string.Equals(a, "/quiet", StringComparison.OrdinalIgnoreCase));
-        bool restore = false;
         try
         {
-            foreach (string arg in args)
-            {
-                if (string.Equals(arg, "/restore", StringComparison.OrdinalIgnoreCase)) restore = true;
-                else if (!string.Equals(arg, "/quiet", StringComparison.OrdinalIgnoreCase))
-                    throw new ArgumentException("用法：直接运行安装汉化；添加 /restore 恢复原版。");
-            }
             foreach (var process in Process.GetProcessesByName("RoadRash95"))
             {
                 process.Dispose();
@@ -223,21 +215,48 @@ internal static class Installer
             var operations = Prepare(ReadPayload(), restore);
             if (operations.Count == 0)
             {
-                Report(restore ? "游戏文件已经是原版。" : "已经安装本版本汉化，无需重复安装。", false, quiet);
-                return 0;
+                return Finish(restore ? "游戏文件已经是原版。" : "已经安装本版本汉化，无需重复安装。", false);
             }
             Apply(operations, restore);
-            Report(restore ? "已恢复英文原版。" :
-                "汉化完成。\n请从 Steam 启动游戏，语言保持为英语。\n\n原版备份已保存在游戏目录的“" + BackupName + "”文件夹。", false, quiet);
-            return 0;
+            return Finish(restore ? "已恢复英文原版。" :
+                "汉化完成。\n请从 Steam 启动游戏，语言保持为英语。\n\n原版备份已保存在游戏目录的“" + BackupName + "”文件夹。", false);
         }
         catch (Exception error)
         {
             string message = error.Message;
             if (error is UnauthorizedAccessException || error.InnerException is UnauthorizedAccessException)
                 message += "\n当前目录没有写入权限，请以管理员身份运行本补丁。";
-            Report(message, true, quiet);
-            return 1;
+            return Finish(message, true);
         }
+    }
+    static Form CreateWindow()
+    {
+        return new PatchWindow("暴力摩托：30周年纪念版 简体中文补丁", Execute);
+    }
+    [STAThread]
+    static int Main(string[] args)
+    {
+        bool quiet = Array.Exists(args, a => string.Equals(a, "/quiet", StringComparison.OrdinalIgnoreCase)), restore = false;
+        foreach (string arg in args)
+        {
+            if (string.Equals(arg, "/restore", StringComparison.OrdinalIgnoreCase)) restore = true;
+            else if (!string.Equals(arg, "/quiet", StringComparison.OrdinalIgnoreCase))
+            {
+                var invalid = Finish("用法：双击打开安装与还原窗口；/restore 直接还原；/quiet 静默执行。", true);
+                if (!quiet) MessageBox.Show(invalid.Message, "暴力摩托：30周年纪念版 简体中文补丁", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return 1;
+            }
+        }
+        if (quiet || restore)
+        {
+            var result = Execute(restore);
+            if (!quiet) MessageBox.Show(result.Message, "暴力摩托：30周年纪念版 简体中文补丁", MessageBoxButtons.OK,
+                                        result.Success ? MessageBoxIcon.Information : MessageBoxIcon.Error);
+            return result.Success ? 0 : 1;
+        }
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
+        using (var window = CreateWindow()) Application.Run(window);
+        return 0;
     }
 }
