@@ -1,0 +1,166 @@
+{
+  "literals": [
+    {
+      "english": "On",
+      "chinese": "开"
+    },
+    {
+      "english": "Off",
+      "chinese": "关"
+    },
+    {
+      "english": "Direct Sound Error",
+      "chinese": "DirectSound错误"
+    },
+    {
+      "english": "Could not lock the DS Buffer",
+      "chinese": "无法锁定声音缓冲区"
+    },
+    {
+      "english": "Compressed data will overflow buffer. Increase size of buffer!",
+      "chinese": "压缩数据超出缓冲区，请增大缓冲区！"
+    },
+    {
+      "english": "Uncompressed data will overflow buffer. Increase size of buffer!",
+      "chinese": "解压数据超出缓冲区，请增大缓冲区！"
+    },
+    {
+      "english": "Unable to allocate destination buffer.",
+      "chinese": "无法分配目标缓冲区。"
+    },
+    {
+      "english": "Error in compressed data!",
+      "chinese": "压缩数据出错！"
+    },
+    {
+      "english": "Unknown error %d",
+      "chinese": "未知错误%d"
+    },
+    {
+      "english": "Line Unavailable",
+      "chinese": "线路不可用"
+    },
+    {
+      "english": "Line Unnamed",
+      "chinese": "未命名线路"
+    },
+    {
+      "english": "Line Name is Empty",
+      "chinese": "线路名称为空"
+    },
+    {
+      "english": "Invalid Location Selected",
+      "chinese": "所选地点无效"
+    },
+    {
+      "english": "Could not set format",
+      "chinese": "无法设置格式"
+    },
+    {
+      "english": "Error",
+      "chinese": "错误"
+    },
+    {
+      "english": "File corrupt or doesn't exist",
+      "chinese": "文件损坏或不存在"
+    },
+    {
+      "english": "Error loading wavefile",
+      "chinese": "波形音频载入失败"
+    },
+    {
+      "english": "The IP/X address you specified is invalid.",
+      "chinese": "指定的IP/X地址无效。"
+    },
+    {
+      "english": "The name field must be non-NULL",
+      "chinese": "姓名字段不能为空"
+    },
+    {
+      "english": "Audio synchonization",
+      "chinese": "音频同步"
+    }
+  ],
+  "resources": [
+    {
+      "id": 0,
+      "english": "Fatal Error",
+      "chinese": "严重错误"
+    },
+    {
+      "id": 1,
+      "english": "Warning",
+      "chinese": "警告"
+    },
+    {
+      "id": 2,
+      "english": "You need to install RoadRash before you can run it. Please run the Setup program.",
+      "chinese": "请先安装暴力摩托，再运行游戏。请执行安装程序。"
+    },
+    {
+      "id": 3,
+      "english": "Invalid argument '%s' ignored.\nUsage: %s [savefile]",
+      "chinese": "已忽略无效参数'%s'。\n用法：%s [存档文件]"
+    },
+    {
+      "id": 4,
+      "english": "Could not find any CD-ROM drive.",
+      "chinese": "找不到光驱。"
+    },
+    {
+      "id": 5,
+      "english": "Could not find RoadRash CD-ROM.",
+      "chinese": "找不到暴力摩托游戏光盘。"
+    },
+    {
+      "id": 6,
+      "english": "Can not find primary language file.",
+      "chinese": "找不到主语言文件。"
+    },
+    {
+      "id": 7,
+      "english": "Can not find text file for your language;\nUsing U.S. English.",
+      "chinese": "找不到所选语言文件，改用英文语言资源。"
+    },
+    {
+      "id": 80,
+      "english": "Fatal Error",
+      "chinese": "严重错误"
+    },
+    {
+      "id": 81,
+      "english": "Warning",
+      "chinese": "警告"
+    },
+    {
+      "id": 82,
+      "english": "You need to install RoadRash before you can run it. Please run the Setup program.",
+      "chinese": "请先安装暴力摩托，再运行游戏。请执行安装程序。"
+    },
+    {
+      "id": 83,
+      "english": "Invalid argument '%s' ignored.\nUsage: %s [savefile]",
+      "chinese": "已忽略无效参数'%s'。\n用法：%s [存档文件]"
+    },
+    {
+      "id": 84,
+      "english": "Could not find any CD-ROM drive.",
+      "chinese": "找不到光驱。"
+    },
+    {
+      "id": 85,
+      "english": "Could not find RoadRash CD-ROM.",
+      "chinese": "找不到暴力摩托游戏光盘。"
+    },
+    {
+      "id": 86,
+      "english": "Can not find primary language file.",
+      "chinese": "找不到主语言文件。"
+    },
+    {
+      "id": 87,
+      "english": "Can not find your language;\nUsing U.S. English.",
+      "chinese": "找不到所选语言文件，改用英文语言资源。"
+    }
+  ]
+}

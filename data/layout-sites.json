@@ -1,0 +1,50 @@
+[
+  {
+    "name": "title_extent",
+    "rva": 242880,
+    "return_offset": 32,
+    "pattern": "f0 eb 23 8b cf 8d 51 01 8a 01 41 84 c0 75 f9 8d 45 d4 2b ca 50 51 57 ff 75 e8 ff 15 ?? ?? ?? ??"
+  },
+  {
+    "name": "title_shadow",
+    "rva": 243420,
+    "return_offset": 32,
+    "pattern": "?? ?? ?? 6a 00 ff 75 e8 ff d6 8b 5d c4 8d 45 ec 6a 00 57 50 6a ff 53 ff 75 e8 ff 15 ?? ?? ?? ??"
+  },
+  {
+    "name": "title_face",
+    "rva": 243463,
+    "return_offset": 32,
+    "pattern": "?? ?? ?? 68 ff 64 32 00 ff 75 e8 ff d6 6a 00 57 8d 45 ec 50 6a ff 53 ff 75 e8 ff 15 ?? ?? ?? ??"
+  },
+  {
+    "name": "panel_measure",
+    "rva": 239877,
+    "return_offset": 32,
+    "pattern": "75 e8 a1 ?? ?? ?? ?? ff d0 6a 00 ff 75 e0 8d 45 ec 50 6a ff ff 75 d4 ff 75 e8 ff 15 ?? ?? ?? ??"
+  },
+  {
+    "name": "panel_shadow",
+    "rva": 240274,
+    "return_offset": 32,
+    "pattern": "?? ?? ?? 6a 00 ff 75 e8 ff d6 8b 7d d4 8d 45 ec 6a 00 53 50 6a ff 57 ff 75 e8 ff 15 ?? ?? ?? ??"
+  },
+  {
+    "name": "panel_face",
+    "rva": 240317,
+    "return_offset": 32,
+    "pattern": "?? ?? ?? 68 de ff f0 00 ff 75 e8 ff d6 6a 00 53 8d 45 ec 50 6a ff 57 ff 75 e8 ff 15 ?? ?? ?? ??"
+  },
+  {
+    "name": "menu_shadow",
+    "rva": 232304,
+    "return_offset": 32,
+    "pattern": "00 6a 00 53 ff 15 ?? ?? ?? ?? 68 ?? ?? ?? ?? 56 8b 35 ?? ?? ?? ?? 8d 45 ec 50 6a ff 57 53 ff d6"
+  },
+  {
+    "name": "menu_face",
+    "rva": 232350,
+    "return_offset": 32,
+    "pattern": "?? ?? ?? 8b 45 d0 50 53 ff 15 ?? ?? ?? ?? 68 ?? ?? ?? ?? ff 75 c4 8d 45 ec 50 6a ff 57 53 ff d6"
+  }
+]

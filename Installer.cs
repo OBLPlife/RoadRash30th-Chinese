@@ -10,253 +10,314 @@ using System.Text;
 using System.Windows.Forms;
 
 [assembly: AssemblyTitle("暴力摩托：30周年纪念版 简体中文补丁")]
-[assembly: AssemblyDescription("Road Rash 30th Anniversary Edition localization-only patch")]
-[assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyFileVersion("1.1.0.0")]
+[assembly: AssemblyDescription("Chinese text resources and app-local text runtime; no game EXE replacement")]
+[assembly: AssemblyVersion("1.2.0.0")]
+[assembly: AssemblyFileVersion("1.2.0.0")]
 
 internal static class Installer
 {
-    const string BackupName = "中文补丁_原版备份";
-    static readonly string[] Names = { "RoadRash95.exe", "TEXT/ENU.DLL" };
+    const string Title = "暴力摩托：30周年纪念版 简体中文补丁";
+    const string Backup = "中文补丁_安装备份";
+    const string StateName = Backup + "/state.bin", PendingName = Backup + "/pending.bin";
+    const string LanguageFile = "TEXT/ENU.DLL", RuntimeFile = "XINPUT9_1_0.dll";
     static readonly string Root = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-    sealed class Span
+    static bool quietMode, acceptCompatibilityRisk;
+    sealed class Payload
     {
-        public int Offset;
-        public byte[] Bytes;
+        public byte[] Dll;
+        public readonly List<byte[]> CandidateHashes = new List<byte[]>();
+        public readonly List<Translation> Text = new List<Translation>();
+        public readonly List<Pattern> Patterns = new List<Pattern>();
     }
-    sealed class Patch
+    sealed class State
     {
-        public string Name;
-        public int OriginalSize, LocalizedSize;
-        public byte[] OriginalHash, LocalizedHash;
-        public readonly List<Span> Spans = new List<Span>();
+        public bool Active;
+        public byte[] BeforeLanguage, InstalledLanguage, BeforeDll, InstalledDllHash;
+        public readonly Dictionary<string, TextEntry> Changes = new Dictionary<string, TextEntry>();
     }
-    sealed class Operation
-    {
-        public string Path, Backup;
-        public byte[] Before, After;
-        public string Temporary;
-    }
-
+    sealed class Operation { public string Name; public byte[] Before, After; }
+    static string PathOf(string name) { return Path.Combine(Root, name.Replace('/', Path.DirectorySeparatorChar)); }
+    static byte[] ReadOptional(string name) { string p = PathOf(name); return File.Exists(p) ? File.ReadAllBytes(p) : null; }
     static bool Equal(byte[] a, byte[] b)
     {
+        if (a == null || b == null) return a == b;
         if (a.Length != b.Length) return false;
         for (int i = 0; i < a.Length; ++i) if (a[i] != b[i]) return false;
         return true;
     }
-    static byte[] Hash(byte[] bytes)
+    static byte[] Hash(byte[] data) { using (var sha = SHA256.Create()) return sha.ComputeHash(data); }
+    static int Count(BinaryReader reader, int limit)
     {
-        using (var sha = SHA256.Create()) return sha.ComputeHash(bytes);
+        int n = reader.ReadInt32();
+        if (n < 0 || n > limit) throw new InvalidDataException("补丁或备份记录长度无效。");
+        return n;
     }
-    static byte[] ReadExact(BinaryReader reader, int count)
+    static byte[] Bytes(BinaryReader reader)
     {
-        if (count < 0 || count > 32 * 1024 * 1024) throw new InvalidDataException("补丁数据长度无效。");
-        byte[] data = reader.ReadBytes(count);
-        if (data.Length != count) throw new InvalidDataException("补丁数据不完整。");
-        return data;
+        int n = reader.ReadInt32(); if (n == -1) return null;
+        if (n < 0 || n > 64 * 1024 * 1024) throw new InvalidDataException("补丁或备份数据长度无效。");
+        byte[] value = reader.ReadBytes(n);
+        if (value.Length != n) throw new EndOfStreamException("补丁或备份不完整。");
+        return value;
     }
-    static List<Patch> ReadPayload()
+    static void Bytes(BinaryWriter writer, byte[] value) { writer.Write(value == null ? -1 : value.Length); if (value != null) writer.Write(value); }
+    static void Magic(BinaryReader r, string expected)
     {
-        var result = new List<Patch>();
+        if (Encoding.ASCII.GetString(r.ReadBytes(8)) != expected) throw new InvalidDataException("补丁或备份格式不兼容。");
+    }
+    static Payload ReadPayload()
+    {
+        var result = new Payload();
         using (var resource = Assembly.GetExecutingAssembly().GetManifestResourceStream("payload.gz"))
         using (var gzip = new GZipStream(resource, CompressionMode.Decompress))
         using (var reader = new BinaryReader(gzip, Encoding.UTF8))
         {
-            if (Encoding.ASCII.GetString(ReadExact(reader, 8)) != "RRZH0001" || reader.ReadInt32() != Names.Length)
-                throw new InvalidDataException("补丁格式无效。");
-            for (int i = 0; i < Names.Length; ++i)
+            Magic(reader, "RRZH0002"); result.Dll = Bytes(reader);
+            if (result.Dll == null) throw new InvalidDataException("缺少文字模块。");
+            int n = Count(reader, 16);
+            for (int i = 0; i < n; ++i) result.CandidateHashes.Add(Bytes(reader));
+            n = Count(reader, 65536);
+            for (int i = 0; i < n; ++i) result.Text.Add(new Translation { Id = reader.ReadInt32(), English = reader.ReadString(), Previous = reader.ReadString(), Chinese = reader.ReadString() });
+            n = Count(reader, 64);
+            for (int i = 0; i < n; ++i)
             {
-                var patch = new Patch();
-                patch.Name = Encoding.UTF8.GetString(ReadExact(reader, reader.ReadInt32()));
-                if (patch.Name != Names[i]) throw new InvalidDataException("补丁文件名无效。");
-                patch.OriginalSize = reader.ReadInt32(); patch.LocalizedSize = reader.ReadInt32();
-                if (patch.OriginalSize <= 0 || patch.LocalizedSize <= 0 || patch.LocalizedSize > 32 * 1024 * 1024)
-                    throw new InvalidDataException("补丁目标大小无效。");
-                patch.OriginalHash = ReadExact(reader, 32); patch.LocalizedHash = ReadExact(reader, 32);
-                int count = reader.ReadInt32();
-                if (count < 0 || count > patch.LocalizedSize) throw new InvalidDataException("补丁片段数无效。");
-                int previousEnd = 0;
-                for (int n = 0; n < count; ++n)
-                {
-                    int offset = reader.ReadInt32(), length = reader.ReadInt32();
-                    if (offset < previousEnd || length < 0 || (long)offset + length > patch.LocalizedSize)
-                        throw new InvalidDataException("补丁片段越界。");
-                    patch.Spans.Add(new Span { Offset = offset, Bytes = ReadExact(reader, length) });
-                    previousEnd = offset + length;
-                }
-                result.Add(patch);
+                var p = new Pattern { Name = reader.ReadString(), Count = Count(reader, 16), Call = reader.ReadInt32(), Bytes = Bytes(reader), Mask = Bytes(reader) };
+                if (p.Bytes == null || p.Mask == null || p.Bytes.Length == 0 || p.Mask.Length != p.Bytes.Length) throw new InvalidDataException("定位特征无效。");
+                result.Patterns.Add(p);
             }
         }
         return result;
     }
-    static string LocalPath(string directory, string relative)
+    static State ReadState(byte[] bytes)
     {
-        return Path.Combine(directory, relative.Replace('/', Path.DirectorySeparatorChar));
+        var state = new State(); if (bytes == null) return state;
+        using (var stream = new MemoryStream(bytes))
+        using (var r = new BinaryReader(stream, Encoding.UTF8))
+        {
+            Magic(r, "RRZHST02"); state.Active = r.ReadBoolean();
+            state.BeforeLanguage = Bytes(r); state.InstalledLanguage = Bytes(r);
+            state.BeforeDll = Bytes(r); state.InstalledDllHash = Bytes(r);
+            int count = Count(r, 65536);
+            for (int i = 0; i < count; ++i)
+            {
+                var c = new TextEntry { Id = r.ReadInt32(), Language = r.ReadInt32(), Before = r.ReadString(), After = r.ReadString() };
+                state.Changes.Add(c.Key, c);
+            }
+            if (state.Active && (state.BeforeLanguage == null || state.InstalledLanguage == null || state.InstalledDllHash == null || state.InstalledDllHash.Length != 32))
+                throw new InvalidDataException("安装备份记录不完整。");
+        }
+        return state;
     }
-    static List<Operation> Prepare(List<Patch> patches, bool restore)
+    static byte[] SaveState(State state)
     {
+        using (var stream = new MemoryStream())
+        using (var w = new BinaryWriter(stream, Encoding.UTF8))
+        {
+            w.Write(Encoding.ASCII.GetBytes("RRZHST02")); w.Write(state.Active);
+            Bytes(w, state.BeforeLanguage); Bytes(w, state.InstalledLanguage); Bytes(w, state.BeforeDll); Bytes(w, state.InstalledDllHash);
+            w.Write(state.Changes.Count);
+            foreach (var c in state.Changes.Values) { w.Write(c.Id); w.Write(c.Language); w.Write(c.Before); w.Write(c.After); }
+            return stream.ToArray();
+        }
+    }
+    static void WriteAtomic(string name, byte[] value)
+    {
+        string target = PathOf(name);
+        if (value == null) { File.Delete(target); return; }
+        Directory.CreateDirectory(Path.GetDirectoryName(target));
+        string temp = target + ".rrzh-" + Guid.NewGuid().ToString("N") + ".tmp";
+        try
+        {
+            using (var f = new FileStream(temp, FileMode.CreateNew, FileAccess.Write, FileShare.None)) { f.Write(value, 0, value.Length); f.Flush(true); }
+            if (File.Exists(target)) File.Replace(temp, target, null); else File.Move(temp, target);
+        }
+        finally { if (File.Exists(temp)) File.Delete(temp); }
+    }
+    static byte[] Journal(List<Operation> operations)
+    {
+        using (var stream = new MemoryStream())
+        using (var w = new BinaryWriter(stream, Encoding.UTF8))
+        {
+            w.Write(Encoding.ASCII.GetBytes("RRZHJN02")); w.Write(operations.Count);
+            foreach (var op in operations) { w.Write(op.Name); Bytes(w, op.Before); Bytes(w, op.After); }
+            return stream.ToArray();
+        }
+    }
+    static void Recover()
+    {
+        byte[] pending = ReadOptional(PendingName); if (pending == null) return;
         var operations = new List<Operation>();
-        foreach (var patch in patches)
+        using (var r = new BinaryReader(new MemoryStream(pending), Encoding.UTF8))
         {
-            string target = LocalPath(Root, patch.Name);
-            if (!File.Exists(target))
-                throw new InvalidOperationException("找不到 " + patch.Name + "。\n请把本 EXE 放到游戏根目录（与 RoadRash95.exe 同一目录）后运行。");
-            byte[] current = File.ReadAllBytes(target), hash = Hash(current);
-            bool original = current.Length == patch.OriginalSize && Equal(hash, patch.OriginalHash);
-            bool localized = current.Length == patch.LocalizedSize && Equal(hash, patch.LocalizedHash);
-            if (!original && !localized)
-                throw new InvalidOperationException("文件版本不匹配：" + patch.Name +
-                    "\n支持 Steam build 26105967 的英文原版，或本纯汉化补丁版本。\n尚未修改游戏文件。");
-            if (restore ? original : localized) continue;
-            string backup = LocalPath(Path.Combine(Root, BackupName), patch.Name);
-            byte[] output;
-            if (restore)
+            Magic(r, "RRZHJN02"); int n = Count(r, 3);
+            for (int i = 0; i < n; ++i)
             {
-                if (!File.Exists(backup) || !Equal(Hash(output = File.ReadAllBytes(backup)), patch.OriginalHash))
-                    throw new InvalidOperationException("原版备份缺失或不匹配：" + patch.Name + "\n尚未修改游戏文件。");
+                string name = r.ReadString();
+                if (name != LanguageFile && name != RuntimeFile && name != StateName) throw new InvalidDataException("恢复记录包含未知文件。");
+                operations.Add(new Operation { Name = name, Before = Bytes(r), After = Bytes(r) });
             }
-            else
-            {
-                if (File.Exists(backup) && !Equal(Hash(File.ReadAllBytes(backup)), patch.OriginalHash))
-                    throw new InvalidOperationException("现有原版备份不匹配：" + patch.Name + "\n为保留已有备份，未安装补丁。");
-                output = new byte[patch.LocalizedSize];
-                Buffer.BlockCopy(current, 0, output, 0, Math.Min(current.Length, output.Length));
-                foreach (var span in patch.Spans) Buffer.BlockCopy(span.Bytes, 0, output, span.Offset, span.Bytes.Length);
-                if (!Equal(Hash(output), patch.LocalizedHash)) throw new InvalidDataException("差分重建校验失败：" + patch.Name);
-            }
-            operations.Add(new Operation { Path = target, Backup = backup, Before = current, After = output });
         }
-        return operations;
+        foreach (var op in operations)
+        {
+            byte[] current = ReadOptional(op.Name);
+            if (!Equal(current, op.Before) && !Equal(current, op.After)) throw new IOException("上次操作中断后，文件又被其他程序修改：" + op.Name + "。已保留恢复记录，请勿删除“" + Backup + "”。");
+        }
+        for (int i = operations.Count - 1; i >= 0; --i)
+        {
+            var op = operations[i]; if (!Equal(ReadOptional(op.Name), op.Before)) WriteAtomic(op.Name, op.Before);
+        }
+        File.Delete(PathOf(PendingName));
     }
-    static string Stage(string target, byte[] contents)
+    static void Apply(List<Operation> operations)
     {
-        string temporary = Path.Combine(Path.GetDirectoryName(target), ".rrzh-" + Guid.NewGuid().ToString("N") + ".tmp");
+        operations.RemoveAll(op => Equal(op.Before, op.After));
+        if (operations.Count == 0) return;
+        WriteAtomic(PendingName, Journal(operations));
         try
         {
-            using (var file = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None))
-            {
-                file.Write(contents, 0, contents.Length);
-                file.Flush(true);
-            }
-            return temporary;
-        }
-        catch { Cleanup(temporary); throw; }
-    }
-    static void Cleanup(string path)
-    {
-        if (path == null) return;
-        try { File.Delete(path); } catch (IOException) { } catch (UnauthorizedAccessException) { }
-    }
-    static void Apply(List<Operation> operations, bool restore)
-    {
-        var applied = new List<Operation>();
-        try
-        {
-            // Verify every target before writing, stage both outputs, and never
-            // replace an existing original backup with a localized file.
             foreach (var op in operations)
             {
-                if (!restore && !File.Exists(op.Backup))
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(op.Backup));
-                    string backupTemporary = Stage(op.Backup, op.Before);
-                    try { File.Move(backupTemporary, op.Backup); } finally { Cleanup(backupTemporary); }
-                }
-                op.Temporary = Stage(op.Path, op.After);
+                if (!Equal(ReadOptional(op.Name), op.Before)) throw new IOException("操作期间文件发生变化：" + op.Name);
+                WriteAtomic(op.Name, op.After);
+                if (!Equal(ReadOptional(op.Name), op.After)) throw new IOException("写入核对失败：" + op.Name);
             }
-            foreach (var op in operations)
-            {
-                if (!Equal(Hash(File.ReadAllBytes(op.Path)), Hash(op.Before)))
-                    throw new IOException("安装期间游戏文件发生变化，请退出游戏后重试。");
-                File.Replace(op.Temporary, op.Path, null);
-                applied.Add(op);
-            }
-            foreach (var op in operations)
-                if (!Equal(Hash(File.ReadAllBytes(op.Path)), Hash(op.After))) throw new IOException("写入后校验失败。");
+            File.Delete(PathOf(PendingName));
         }
         catch (Exception failure)
         {
-            var failedRestores = new List<string>();
-            for (int i = applied.Count - 1; i >= 0; --i)
-            {
-                string temporary = null;
-                try
-                {
-                    temporary = Stage(applied[i].Path, applied[i].Before);
-                    File.Replace(temporary, applied[i].Path, null);
-                }
-                catch { failedRestores.Add(applied[i].Path); }
-                finally { Cleanup(temporary); }
-            }
-            if (failedRestores.Count != 0)
-                throw new IOException("操作失败，以下文件需要从“" + BackupName + "”手动恢复：\n" +
-                    string.Join("\n", failedRestores.ToArray()) + "\n" + failure.Message);
-            throw new IOException("操作未完成，游戏文件保持本次操作前的状态。\n" + failure.Message, failure);
+            try { Recover(); }
+            catch (Exception recovery) { throw new IOException("操作中断，已保留备份和恢复记录。关闭占用文件的程序后，重新运行安装器。\n" + failure.Message + "\n" + recovery.Message); }
+            throw new IOException("操作未完成，已回滚到本次操作前的状态。\n" + failure.Message);
         }
-        finally { foreach (var op in operations) Cleanup(op.Temporary); }
     }
-    static PatchResult Finish(string message, bool error)
+    static bool Ours(byte[] dll, State state, Payload payload)
     {
-        string log = message + "\n\n许可：PolyForm Noncommercial License 1.0.0\nhttps://polyformproject.org/licenses/noncommercial/1.0.0";
-        try { File.WriteAllText(Path.Combine(Root, "RoadRash_ZH_CN_Setup.log"), log + Environment.NewLine, Encoding.UTF8); }
-        catch (IOException) { } catch (UnauthorizedAccessException) { }
-        return new PatchResult(!error, message);
+        if (dll == null) return true;
+        byte[] hash = Hash(dll);
+        if (state.Active && Equal(hash, state.InstalledDllHash)) return true;
+        if (Equal(dll, payload.Dll)) return true;
+        foreach (var known in payload.CandidateHashes) if (Equal(hash, known)) return true;
+        return false;
+    }
+    static void ConfirmCompatibility(List<string> warnings)
+    {
+        if (warnings.Count == 0) return;
+        string warning = "检测到当前游戏的相关结构与已知版本存在差异：\n\n" +
+            string.Join("\n", new List<string>(new HashSet<string>(warnings)).ToArray()) +
+            "\n\n继续将安装完整汉化资源和文字 DLL，不会自动改为精简安装。" +
+            "\n可能出现文本异常、画面异常、功能失效、报错或游戏崩溃。" +
+            "\n操作会保留备份，可退出游戏后用本安装器还原。";
+        if (acceptCompatibilityRisk) return;
+        if (quietMode) throw new InvalidOperationException(warning + "\n\n静默模式需要明确确认：接受上述风险时添加 /accept-risk，或双击安装器选择继续。");
+        if (MessageBox.Show(warning + "\n\n仍要继续全量安装吗？（是：继续；否：取消）", Title,
+            MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+            throw new OperationCanceledException("已取消安装，未写入本次汉化改动。");
+    }
+    static string Perform(bool restore)
+    {
+        foreach (var process in Process.GetProcessesByName("RoadRash95"))
+        {
+            process.Dispose(); throw new InvalidOperationException("请先退出暴力摩托，再安装或还原补丁。");
+        }
+        byte[] exe = ReadOptional("RoadRash95.exe"), language = ReadOptional(LanguageFile);
+        if (exe == null || language == null) throw new InvalidOperationException("请把本 EXE 放到游戏根目录（与 RoadRash95.exe 同一文件夹）。需要 TEXT/ENU.DLL。");
+        Recover(); language = ReadOptional(LanguageFile);
+        byte[] beforeState = ReadOptional(StateName), currentDll = ReadOptional(RuntimeFile);
+        State state = ReadState(beforeState); Payload payload = ReadPayload();
+        if (restore && !state.Active) return "未发现本版的安装记录，无需还原。旧版备份保持原样。";
+        if (!Ours(currentDll, state, payload)) throw new InvalidOperationException("已有其他来源的 XINPUT9_1_0.dll，已保留原文件。请先处理同名模块冲突，再安装或还原。" );
+        byte[] afterLanguage, afterDll;
+        int changed = 0, preserved = 0;
+        string compatibilityNote = "";
+        if (restore)
+        {
+            if (Equal(language, state.InstalledLanguage)) afterLanguage = state.BeforeLanguage;
+            else
+            {
+                var entries = new GameImage(language).Strings();
+                foreach (var c in state.Changes.Values)
+                {
+                    TextEntry item;
+                    if (entries.TryGetValue(c.Key, out item) && item.Before == c.After) item.After = c.Before;
+                    else ++preserved;
+                }
+                afterLanguage = TextResources.Rewrite(language, entries);
+            }
+            afterDll = state.BeforeDll; state.Active = false;
+        }
+        else
+        {
+            var compatibility = new GameImage(exe).CheckGame(payload.Patterns);
+            var entries = new GameImage(language).Strings();
+            var table = new Dictionary<int, Translation>(); foreach (var t in payload.Text) table.Add(t.Id, t);
+            if (!state.Active) state = new State { BeforeLanguage = language, BeforeDll = currentDll };
+            int recognized = 0;
+            foreach (var item in entries.Values)
+            {
+                Translation t; if (!table.TryGetValue(item.Id, out t)) continue;
+                if (item.Before != t.English && item.Before != t.Previous && item.Before != t.Chinese) { ++preserved; continue; }
+                ++recognized; item.After = t.Chinese;
+                if (item.Before == item.After) continue;
+                ++changed;
+                TextEntry owned;
+                if (!state.Changes.TryGetValue(item.Key, out owned)) state.Changes[item.Key] = new TextEntry { Id = item.Id, Language = item.Language, Before = item.Before, After = item.After };
+                else
+                {
+                    if (item.Before != owned.After && item.Before != owned.Before) owned.Before = item.Before;
+                    owned.After = item.After;
+                }
+            }
+            if (recognized == 0) throw new InvalidDataException("语言资源没有可识别的原文或已有译文，未安装汉化。");
+            TextResources.CheckBudget(entries);
+            afterLanguage = TextResources.Rewrite(language, entries); afterDll = payload.Dll;
+            // The complete output is prepared before asking. A warning never
+            // selects a reduced payload or silently omits the runtime DLL.
+            ConfirmCompatibility(compatibility.Warnings);
+            if (compatibility.Warnings.Count != 0)
+                compatibilityNote = "\n已接受兼容性风险，完整汉化资源和文字 DLL 均已安装。\n" +
+                    string.Join("\n", new List<string>(new HashSet<string>(compatibility.Warnings)).ToArray());
+            state.Active = true; state.InstalledLanguage = afterLanguage; state.InstalledDllHash = Hash(afterDll);
+        }
+        var operations = new List<Operation> {
+            new Operation { Name = LanguageFile, Before = language, After = afterLanguage },
+            new Operation { Name = RuntimeFile, Before = currentDll, After = afterDll },
+            new Operation { Name = StateName, Before = beforeState, After = SaveState(state) }
+        };
+        Apply(operations);
+        string note = preserved == 0 ? "" : "\n保留了 " + preserved + " 条由其他版本或补丁改动的文本。";
+        if (restore) return "已恢复本版安装前的资源和文字模块。\n安装前已有的旧汉化会保留。高清补丁和存档不受影响。" + note;
+        return "汉化安装完成（更新 " + changed + " 条文本）。\n按原来的方式启动游戏，语言保持英语。\n还原备份保存在“" + Backup + "”。" + compatibilityNote + note;
     }
     static PatchResult Execute(bool restore)
     {
-        try
-        {
-            foreach (var process in Process.GetProcessesByName("RoadRash95"))
-            {
-                process.Dispose();
-                throw new InvalidOperationException("请先退出暴力摩托，再运行汉化补丁。");
-            }
-            var operations = Prepare(ReadPayload(), restore);
-            if (operations.Count == 0)
-            {
-                return Finish(restore ? "游戏文件已经是原版。" : "已经安装本版本汉化，无需重复安装。", false);
-            }
-            Apply(operations, restore);
-            return Finish(restore ? "已恢复英文原版。" :
-                "汉化完成。\n请从 Steam 启动游戏，语言保持为英语。\n\n原版备份已保存在游戏目录的“" + BackupName + "”文件夹。", false);
-        }
-        catch (Exception error)
-        {
-            string message = error.Message;
-            if (error is UnauthorizedAccessException || error.InnerException is UnauthorizedAccessException)
-                message += "\n当前目录没有写入权限，请以管理员身份运行本补丁。";
-            return Finish(message, true);
-        }
-    }
-    static Form CreateWindow()
-    {
-        return new PatchWindow("暴力摩托：30周年纪念版 简体中文补丁", Execute);
+        bool success = true; string message;
+        try { message = Perform(restore); }
+        catch (OperationCanceledException e) { message = e.Message; }
+        catch (Exception e) { success = false; message = e.Message; }
+        try { File.WriteAllText(PathOf("RoadRash_ZH_CN_Setup.log"), DateTime.Now.ToString("s") + "\r\n" + message + "\r\n", Encoding.UTF8); }
+        catch (IOException) { } catch (UnauthorizedAccessException) { }
+        return new PatchResult(success, message);
     }
     [STAThread]
     static int Main(string[] args)
     {
-        bool quiet = Array.Exists(args, a => string.Equals(a, "/quiet", StringComparison.OrdinalIgnoreCase)), restore = false;
+        bool quiet = false, restore = false;
         foreach (string arg in args)
         {
-            if (string.Equals(arg, "/restore", StringComparison.OrdinalIgnoreCase)) restore = true;
-            else if (!string.Equals(arg, "/quiet", StringComparison.OrdinalIgnoreCase))
-            {
-                var invalid = Finish("用法：双击打开安装与还原窗口；/restore 直接还原；/quiet 静默执行。", true);
-                if (!quiet) MessageBox.Show(invalid.Message, "暴力摩托：30周年纪念版 简体中文补丁", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return 1;
-            }
+            if (arg.Equals("/quiet", StringComparison.OrdinalIgnoreCase)) quiet = true;
+            else if (arg.Equals("/accept-risk", StringComparison.OrdinalIgnoreCase)) acceptCompatibilityRisk = true;
+            else if (arg.Equals("/restore", StringComparison.OrdinalIgnoreCase)) restore = true;
+            else return 2;
         }
+        quietMode = quiet;
         if (quiet || restore)
         {
             var result = Execute(restore);
-            if (!quiet) MessageBox.Show(result.Message, "暴力摩托：30周年纪念版 简体中文补丁", MessageBoxButtons.OK,
-                                        result.Success ? MessageBoxIcon.Information : MessageBoxIcon.Error);
+            if (!quiet) MessageBox.Show(result.Message, Title, MessageBoxButtons.OK, result.Success ? MessageBoxIcon.Information : MessageBoxIcon.Error);
             return result.Success ? 0 : 1;
         }
-        Application.EnableVisualStyles();
-        Application.SetCompatibleTextRenderingDefault(false);
-        using (var window = CreateWindow()) Application.Run(window);
+        Application.EnableVisualStyles(); Application.SetCompatibleTextRenderingDefault(false);
+        using (var window = new PatchWindow(Title, Execute)) Application.Run(window);
         return 0;
     }
 }

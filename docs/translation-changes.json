@@ -1,0 +1,233 @@
+[
+  {
+    "id": 6,
+    "english": "Restroom",
+    "previous": "休息室",
+    "chinese": "洗手间",
+    "context": "菜单、游戏状态或功能说明；具体显示见覆盖清单",
+    "verdict": "A",
+    "changed": true,
+    "basis": "官方说明书 Restroom Options、厕所场景；不是休息室。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  },
+  {
+    "id": 30,
+    "english": "Trade",
+    "previous": "折价",
+    "chinese": "旧车折价",
+    "context": "菜单、游戏状态或功能说明；具体显示见覆盖清单",
+    "verdict": "A",
+    "changed": true,
+    "basis": "车行出售旧车抵扣购车价格，避免与普通优惠折扣混淆。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  },
+  {
+    "id": 43,
+    "english": "Height: %s\nWeight: %s\nBike: %s\nCash: $%d\nAn ex-con with a death wish. Jon's daredevil style strikes fear in the hearts of seasoned riders.",
+    "previous": "身高：%s\n体重：%s\n座驾：%s\n现金：$%d\n一心求死的前科犯。乔恩不要命的骑法，连老车手见了都发怵。",
+    "chinese": "身高：%s\n体重：%s\n座驾：%s\n现金：$%d\n不要命的前科犯。乔恩那股玩命的骑法，连老车手见了都发怵。",
+    "context": "角色选择/人物介绍",
+    "verdict": "A",
+    "changed": true,
+    "basis": "death wish 在冒险骑法语境中夸张指不顾危险；一心求死误成明确自杀意图。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  },
+  {
+    "id": 47,
+    "english": "Height: %s\nWeight: %s\nBike: %s\nCash: $%d\nDropped on his head at an early age, Mike is a gonzo wild man: fearless, unpredictable, brain damaged.",
+    "previous": "身高：%s\n体重：%s\n座驾：%s\n现金：$%d\n迈克小时候摔坏了脑袋。这个狂人无所畏惧、难以捉摸，而且脑子有病。",
+    "chinese": "身高：%s\n体重：%s\n座驾：%s\n现金：$%d\n迈克小时候摔伤了脑袋，是个天不怕地不怕、谁也摸不透的狂人，脑子也确实摔坏了。",
+    "context": "角色选择/人物介绍",
+    "verdict": "A",
+    "changed": true,
+    "basis": "brain damaged 与幼年头伤直接呼应，不能含混写成精神疾病。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  },
+  {
+    "id": 157,
+    "english": "Quick steering, nitro and an unforgiving frame make it hard to hold a line at speed.\n$%d\n100 HP/430 lbs\nHANDLING: Lightning\nACCELERATION: Tissue-tearing\nTOP SPEED: Daunting",
+    "previous": "转向迅捷，配有氮气，但车架毫不宽容，高速时很难守住路线。\n$%d\n100马力/430磅\n操控：闪电般\n加速：撕裂肌肉\n极速：令人胆寒",
+    "chinese": "转向迅捷，配有氮气，但车架容不得半点失误，高速时很难稳住行车路线。\n$%d\n100马力/430磅\n操控：闪电般\n加速：撕裂肌肉\n极速：令人胆寒",
+    "context": "车辆品牌、型号、性能与介绍",
+    "verdict": "C-润色",
+    "changed": true,
+    "basis": "保留原参数与夸张口吻；unforgiving frame 不直译为毫不宽容。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  },
+  {
+    "id": 270,
+    "english": "Delete",
+    "previous": "删除",
+    "chinese": "Delete",
+    "context": "菜单、游戏状态或功能说明；具体显示见覆盖清单",
+    "verdict": "A",
+    "changed": true,
+    "basis": "此处是实体按键名，须与键盘标识一致；224 的删除命令保持中文。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  },
+  {
+    "id": 289,
+    "english": "Host",
+    "previous": "主持",
+    "chinese": "创建房间",
+    "context": "菜单、游戏状态或功能说明；具体显示见覆盖清单",
+    "verdict": "A",
+    "changed": true,
+    "basis": "联机功能动词 Host 是创建/主持游戏，不是一般主持活动。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  },
+  {
+    "id": 295,
+    "english": "Host a mano-à-mano game. Pick a level, a connection mechanism, and a character, then wait for your friends!",
+    "previous": "主持联机对战。选择等级、连接方式和角色，再等朋友加入！",
+    "chinese": "创建联机房间。选择等级、连接方式和角色，再等朋友加入！",
+    "context": "菜单、游戏状态或功能说明；具体显示见覆盖清单",
+    "verdict": "C-润色",
+    "changed": true,
+    "basis": "与289一致，不改变连接功能。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  },
+  {
+    "id": 397,
+    "english": "You can use the standard biker, or get a high-res biker at the expense of using a bit more memory.",
+    "previous": "可选标准车手模型，或占用更多内存的高清车手模型。",
+    "chinese": "可选标准车手图像，或占用更多内存的高清车手图像。",
+    "context": "菜单、游戏状态或功能说明；具体显示见覆盖清单",
+    "verdict": "A",
+    "changed": true,
+    "basis": "原版车手采用预制图像；高分辨率选项不是更换3D模型。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  },
+  {
+    "id": 511,
+    "english": "I'm gonna hit you so hard they'll be scrubbing the pavement out of you.",
+    "previous": "我要把你揍得嵌进路面，抠都抠不下来。",
+    "chinese": "我要把你揍得满身嵌进柏油渣，得靠人一点点刷出来。",
+    "context": "俱乐部对白；资源组推断第1级，阿克塞尔（运行触发另验）",
+    "verdict": "A",
+    "changed": true,
+    "basis": "scrub the pavement out of you：清除嵌入身体的路面碎屑，旧译反转了清理对象。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  },
+  {
+    "id": 606,
+    "english": "They say you always hurt the ones you love. In your case I'll make an exception.",
+    "previous": "都说人会伤害自己爱的人。对你，我愿意破例。",
+    "chinese": "都说人总伤害自己爱的人。你就例外了——不爱你也照揍。",
+    "context": "俱乐部对白；资源组推断第2级，阿克塞尔（运行触发另验）",
+    "verdict": "A",
+    "changed": true,
+    "basis": "敌对威胁句中的例外是打不爱的人；原译容易被理解为不伤害对方。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  },
+  {
+    "id": 667,
+    "english": "You're just another loser left behind in my wake of fury.",
+    "previous": "你不过是被我狂怒的尾流甩下的又一个输家。",
+    "chinese": "你也不过是个输家，被我一路狂怒着甩在身后。",
+    "context": "俱乐部对白；资源组推断第2级，罗达（运行触发另验）",
+    "verdict": "C-润色",
+    "changed": true,
+    "basis": "in my wake 指身后留下的结果，保留狂怒意象，消除生硬尾流搭配。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  },
+  {
+    "id": 802,
+    "english": "Pearl, if I had to choose one word to express how I feel for you, it would be 'you make me sick.'",
+    "previous": "珀尔，要用一个词表达我对你的感觉，那就是“恶心”。",
+    "chinese": "珀尔，要用一个词表达我对你的感觉，那就是“你让我恶心”。",
+    "context": "俱乐部对白；资源组推断第4级，阿克塞尔（运行触发另验）",
+    "verdict": "A",
+    "changed": true,
+    "basis": "原文说一个词却给出整句，保留故意自相矛盾的笑点。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  },
+  {
+    "id": 862,
+    "english": "Hey, Teflon, I'll make sure your rep as a yellow punk will stick to your hide.",
+    "previous": "铁氟龙，我要让“黄胆怂包”的名声牢牢黏在你身上。",
+    "chinese": "铁氟龙，我要让“胆小鬼”的名声牢牢黏在你身上。",
+    "context": "俱乐部对白；资源组推断第4级，罗达（运行触发另验）",
+    "verdict": "A",
+    "changed": true,
+    "basis": "yellow 此处指怯懦；保留 Teflon / stick 的不粘双关，删除生硬的黄胆。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  },
+  {
+    "id": 917,
+    "english": "You're as crude a rider as I've ever seen. You'd better be a good fighter to get to the front of the pack.",
+    "previous": "你是我见过最粗糙的车手。想跑到前面，打架最好够厉害。",
+    "chinese": "我就没见过骑得像你这么糙的。想冲到车群前面，打架最好够厉害。",
+    "context": "俱乐部对白；资源组推断第5级，辛迪（运行触发另验）",
+    "verdict": "C-润色",
+    "changed": true,
+    "basis": "crude rider 指骑术粗糙，改掉最粗糙的车手这一生硬搭配。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  },
+  {
+    "id": 924,
+    "english": "You're as crude a rider as I've ever seen. You'd better be a good fighter to get to the front of the pack.",
+    "previous": "你是我见过最粗糙的车手。想跑到前面，打架最好够厉害。",
+    "chinese": "我就没见过骑得像你这么糙的。想冲到车群前面，打架最好够厉害。",
+    "context": "俱乐部对白；资源组推断第5级，辛迪（运行触发另验）",
+    "verdict": "C-润色",
+    "changed": true,
+    "basis": "与917同一原文统一。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  },
+  {
+    "id": 961,
+    "english": "Has your voice changed yet, Slim? Come back when you reach puberty.",
+    "previous": "瘦子，变声了吗？等过了青春期再来吧。",
+    "chinese": "瘦子，变声了吗？等进了青春期再来吧。",
+    "context": "俱乐部对白；资源组推断第5级，罗达（运行触发另验）",
+    "verdict": "A",
+    "changed": true,
+    "basis": "reach puberty 是进入青春期，旧译过了青春期改变时间条件。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  },
+  {
+    "id": 982,
+    "english": "Cyd, I think you crushed a few too many empties on your forehead. No one messes with me like that.",
+    "previous": "辛迪，你是不是拿额头砸空罐头砸多了？没人敢这么惹我。",
+    "chinese": "辛迪，你是不是拿额头砸空易拉罐砸多了？没人敢这么惹我。",
+    "context": "俱乐部对白；资源组推断第5级，迈克（运行触发另验）",
+    "verdict": "A",
+    "changed": true,
+    "basis": "酒吧语境的 empties 是空饮料罐，不是罐头食品。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  },
+  {
+    "id": 987,
+    "english": "High-res upscaled videos",
+    "previous": "高清修复影片",
+    "chinese": "放大修复影片",
+    "context": "菜单、游戏状态或功能说明；具体显示见覆盖清单",
+    "verdict": "A",
+    "changed": true,
+    "basis": "upscaled 明确为放大处理；不将其描述成原生高清。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  },
+  {
+    "id": 2002,
+    "english": "-In a moment of temporary insanity,",
+    "previous": "-在这短暂的狂欢中，",
+    "chinese": "-大家一时忘乎所以，",
+    "context": "赛季夺冠结束文本",
+    "verdict": "C-润色",
+    "changed": true,
+    "basis": "temporary insanity 为夺冠后一时失态；不是短暂狂欢这件事本身。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  },
+  {
+    "id": 2011,
+    "english": "-of fame.  Count 'em.",
+    "previous": "-十五分钟的成名，好好数着。",
+    "chinese": "-成名只有十五分钟。掐着表享受吧。",
+    "context": "赛季夺冠结束文本",
+    "verdict": "C-润色",
+    "changed": true,
+    "basis": "保留短暂成名与 Count em 的戏谑，不补写现实代言收入。",
+    "display": "尚未验证；不以资源审校等同实机覆盖"
+  }
+]

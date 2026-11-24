@@ -1,0 +1,33 @@
+{
+  "version": "1.2.0",
+  "passed": [
+    "original install: all 1166 translations, original police placeholder, non-string resources, EXE and three save fixtures preserved",
+    "repeat install preserves first restore point and does not duplicate hooks",
+    "restore is byte-identical on clean baseline; repeated restore and reinstall work",
+    "unrelated EXE byte change accepted without whole-file hash whitelist",
+    "人物立绘调用变化: warning without consent leaves files unchanged; accepting installs all 1166 texts and the complete DLL; repeat and exact restore work",
+    "文字模块入口变化: warning without consent leaves files unchanged; accepting installs all 1166 texts and the complete DLL; repeat and exact restore work",
+    "文字接口变化: warning without consent leaves files unchanged; accepting installs all 1166 texts and the complete DLL; repeat and exact restore work",
+    "菜单排版结构变化: warning without consent leaves files unchanged; accepting installs all 1166 texts and the complete DLL; repeat and exact restore work",
+    "导入表缺失: warning without consent leaves files unchanged; accepting installs all 1166 texts and the complete DLL; repeat and exact restore work",
+    "程序架构变化: warning without consent leaves files unchanged; accepting installs all 1166 texts and the complete DLL; repeat and exact restore work",
+    "unknown same-name proxy retained without overwrite",
+    "reinstall after resource replacement and missing own DLL repairs patch and retains restore point",
+    "resource-level restore preserves externally modified text without restoring stale full file",
+    "second-file restore failure rolls resource file back atomically",
+    "simulated interruption after each of three writes is recovered on next invocation",
+    "legacy localization upgrade restores its own preinstall state without replacing legacy/HD EXE",
+    "known local candidate upgrade and restore preserves user-confirmed prior DLL/resources",
+    "earlier candidate upgrade installs the complete current runtime and retains original restore point",
+    "zh-hd / restore zh first: independent restore, repeated installers and original EXE/resource recovery; HD retains its own INI by design",
+    "zh-hd / restore hd first: independent restore, repeated installers and original EXE/resource recovery; HD retains its own INI by design",
+    "hd-zh / restore zh first: independent restore, repeated installers and original EXE/resource recovery; HD retains its own INI by design",
+    "hd-zh / restore hd first: independent restore, repeated installers and original EXE/resource recovery; HD retains its own INI by design"
+  ],
+  "game_started": false,
+  "gui_opened": false,
+  "live_game_modified": false,
+  "save_tests": "three synthetic file-preservation fixtures only; no in-game create/load/overwrite test",
+  "installer_sha256": "a1d49aeaac973688070d1386b09100896c8ee4312686014b0a580a3101480124",
+  "runtime_sha256": "fc4b8369afa5f1b50e46e218c78d4f46bb5354d57cb62aba78c41e6a144bcff5"
+}
